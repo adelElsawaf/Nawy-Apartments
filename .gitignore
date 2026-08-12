@@ -1,0 +1,22 @@
+.DS_Store
+.idea/
+.vscode/
+
+# Dependencies & build
+**/node_modules/
+**/dist/
+**/build/
+**/coverage/
+
+# Env / secrets
+**/.env
+**/.env.local
+**/.env.*.local
+
+# Uploads (keep folder structure via .gitkeep)
+**/uploads/**
+!**/uploads/**/.gitkeep
+
+# Logs
+*.log
+npm-debug.log*
