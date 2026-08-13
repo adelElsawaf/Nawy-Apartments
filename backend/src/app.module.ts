@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { ProjectModule } from './project/project.module';
 import { StorageModule } from './storage/storage.module';
 import { UploadModule } from './upload/upload.module';
 
@@ -27,6 +28,7 @@ import { UploadModule } from './upload/upload.module';
     }),
     StorageModule,
     UploadModule,
+    ProjectModule,
   ],
   controllers: [AppController],
   providers: [AppService],
