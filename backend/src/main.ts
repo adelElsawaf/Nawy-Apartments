@@ -51,9 +51,10 @@ async function bootstrap() {
     },
   });
 
-  await app.listen(
-    Number(config.get('PORT', 3000)),
-    '0.0.0.0',
-  );
+  const port = Number(config.get('PORT', 3000));
+
+  await app.listen(port, '0.0.0.0');
+  
+  console.log(`🚀 Server listening on port ${port}`);
 }
 bootstrap();
