@@ -21,6 +21,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "NawyTask",
   description: "Browse apartments and projects",
+  icons: {
+    icon: "/nawyestate_logo.jpeg",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
