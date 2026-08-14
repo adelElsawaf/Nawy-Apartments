@@ -1,12 +1,14 @@
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import Tag from "@/components/ui/tag/Tag";
 
 type CardProps = {
   title: string;
   description?: string | null;
   caption: string;
   image?: string;
+  tag?: string | null;
 };
 
 export default function Card({
@@ -14,6 +16,7 @@ export default function Card({
   description,
   caption,
   image,
+  tag,
 }: CardProps) {
   return (
     <Box
@@ -56,17 +59,24 @@ export default function Card({
       }}
     >
       {image && (
-        <Box
-          component="img"
-          src={image}
-          alt={title}
-          sx={{
-            width: "100%",
-            height: 180,
-            objectFit: "cover",
-            display: "block",
-          }}
-        />
+        <Box sx={{ position: "relative" }}>
+          <Box
+            component="img"
+            src={image}
+            alt={title}
+            sx={{
+              width: "100%",
+              height: 180,
+              objectFit: "cover",
+              display: "block",
+            }}
+          />
+          {tag && (
+            <Box sx={{ position: "absolute", top: 12, left: 12, right: 12 }}>
+              <Tag label={tag} />
+            </Box>
+          )}
+        </Box>
       )}
 
       <Stack spacing={2} sx={{ position: "relative", zIndex: 1, flex: 1, p: 3 }}>
@@ -92,6 +102,11 @@ export default function Card({
         )}
 
         <Box sx={{ flex: 1 }}>
+          {!image && tag && (
+            <Box sx={{ mb: 1.5 }}>
+              <Tag label={tag} />
+            </Box>
+          )}
           <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
             {title}
           </Typography>

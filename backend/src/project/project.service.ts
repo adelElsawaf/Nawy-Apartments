@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 import { isUniqueViolation } from '../shared/exceptions/db/is-unique-violation';
@@ -31,6 +31,15 @@ export class ProjectService {
 
       throw error;
     }
+  }
+
+  async findEntityById(id: number): Promise<Project> {
+    const project = await this.projects.findOne({ where: { id } });
+    if (!project) {
+      throw new NotFoundException(`Project with id "${id}" not found`);
+    }
+
+    return project;
   }
 
   async getAll(dto: GetAllRequestDto): Promise<GetAllResponseDto> {
