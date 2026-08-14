@@ -8,7 +8,7 @@ Take-home apartment listing app: browse projects and apartments, filter units, u
 | Frontend | Next.js 16 (App Router), React 19, MUI 9 | `3001` |
 
 API base URL: `http://localhost:3000/api`  
-Swagger UI: [http://localhost:3000/api/docs](http://localhost:3000/api/docs)  
+API docs (Swagger): [http://localhost:3000/api/docs](http://localhost:3000/api/docs)  
 Static images: `http://localhost:3000/uploads/...`
 
 ---
@@ -28,38 +28,52 @@ Static images: `http://localhost:3000/uploads/...`
 - `POST /api/uploads` stores the file locally and returns `{ path, url }`
 - Create apartment sends those `path` values (not raw files) in the request body
 
+### API documentation
+- Interactive Swagger UI for all endpoints (projects, apartments, uploads)
+- Open: [http://localhost:3000/api/docs](http://localhost:3000/api/docs)
+
 ---
 
-## Quick start (Docker — recommended)
+## Run with Docker
 
-One command runs Postgres, the API, and the frontend:
+Requires [Docker](https://docs.docker.com/get-docker/) and Docker Compose.
+
+From the repo root:
 
 ```bash
 docker compose up --build
 ```
 
-Then open:
-
-- App: [http://localhost:3001](http://localhost:3001)
-- API: [http://localhost:3000/api](http://localhost:3000/api)
-- Swagger: [http://localhost:3000/api/docs](http://localhost:3000/api/docs)
-
-Stop with `Ctrl+C`, or run detached:
+Detached mode:
 
 ```bash
 docker compose up --build -d
+```
+
+Then open:
+
+| What | URL |
+| --- | --- |
+| Frontend | [http://localhost:3001](http://localhost:3001) |
+| Backend API | [http://localhost:3000/api](http://localhost:3000/api) |
+| Swagger docs | [http://localhost:3000/api/docs](http://localhost:3000/api/docs) |
+
+Stop:
+
+```bash
+# foreground: Ctrl+C
 docker compose down
 ```
 
 Compose services:
 
-| Service | URL / port | Notes |
-| --- | --- | --- |
-| `frontend` | `http://localhost:3001` | Next.js |
-| `backend` | `http://localhost:3000` | NestJS + Swagger at `/api/docs` |
-| `db` | `localhost:5432` | Postgres (`postgres` / `postgres` / `apartments_db`) |
+| Service | Container | URL / port | Notes |
+| --- | --- | --- | --- |
+| `frontend` | `nawy-frontend` | `http://localhost:3001` | Next.js |
+| `backend` | `nawy-backend` | `http://localhost:3000` | NestJS · docs at `/api/docs` |
+| `db` | `nawy-db` | `localhost:5432` | Postgres (`postgres` / `postgres` / `apartments_db`) |
 
-Uploaded images are stored in the `uploads_data` volume.
+Uploaded images persist in the `uploads_data` volume; DB data in `postgres_data`.
 
 ---
 
@@ -139,9 +153,9 @@ nawy-apartments/
 ├── backend/                 # NestJS API
 │   ├── Dockerfile
 │   ├── src/
-│   │   ├── apartment/       # Entity, DTOs, mapper, service, controller
-│   │   ├── project/         # Entity, DTOs, mapper, service, controller
-│   │   ├── upload/          # Multipart upload endpoint
+│   │   ├── apartment/       # Entity, DTOs, mapper, service, controller + Swagger docs
+│   │   ├── project/         # Entity, DTOs, mapper, service, controller + Swagger docs
+│   │   ├── upload/          # Multipart upload endpoint + Swagger docs
 │   │   ├── storage/         # Multer + local disk storage
 │   │   └── shared/          # DB helpers (e.g. unique violation)
 │   └── uploads/images/      # Stored image files (gitignored content)
@@ -158,6 +172,8 @@ nawy-apartments/
 ---
 
 ## API reference
+
+Interactive docs: [http://localhost:3000/api/docs](http://localhost:3000/api/docs)
 
 Global prefix: `/api`  
 Validation: `class-validator` via global `ValidationPipe` (`whitelist`, `forbidNonWhitelisted`, `transform`)
