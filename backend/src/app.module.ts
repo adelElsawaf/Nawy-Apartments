@@ -13,6 +13,7 @@ import { UploadModule } from './upload/upload.module';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
+      ignoreEnvFile: process.env.IGNORE_ENV_FILE === 'true',
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
@@ -24,7 +25,9 @@ import { UploadModule } from './upload/upload.module';
         password: config.get<string>('DB_PASSWORD'),
         database: config.get<string>('DB_NAME'),
         autoLoadEntities: true,
-        synchronize: config.get('NODE_ENV') !== 'production',
+        synchronize:
+          config.get<string>('DB_SYNCHRONIZE') === 'true' ||
+          config.get('NODE_ENV') !== 'production',
       }),
     }),
     StorageModule,

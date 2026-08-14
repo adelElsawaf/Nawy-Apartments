@@ -8,6 +8,7 @@ Take-home apartment listing app: browse projects and apartments, filter units, u
 | Frontend | Next.js 16 (App Router), React 19, MUI 9 | `3001` |
 
 API base URL: `http://localhost:3000/api`  
+Swagger UI: [http://localhost:3000/api/docs](http://localhost:3000/api/docs)  
 Static images: `http://localhost:3000/uploads/...`
 
 ---
@@ -29,33 +30,53 @@ Static images: `http://localhost:3000/uploads/...`
 
 ---
 
-## Prerequisites
+## Quick start (Docker — recommended)
 
-- Node.js 20+
-- npm
-- PostgreSQL 14+ (local or Docker)
+One command runs Postgres, the API, and the frontend:
+
+```bash
+docker compose up --build
+```
+
+Then open:
+
+- App: [http://localhost:3001](http://localhost:3001)
+- API: [http://localhost:3000/api](http://localhost:3000/api)
+- Swagger: [http://localhost:3000/api/docs](http://localhost:3000/api/docs)
+
+Stop with `Ctrl+C`, or run detached:
+
+```bash
+docker compose up --build -d
+docker compose down
+```
+
+Compose services:
+
+| Service | URL / port | Notes |
+| --- | --- | --- |
+| `frontend` | `http://localhost:3001` | Next.js |
+| `backend` | `http://localhost:3000` | NestJS + Swagger at `/api/docs` |
+| `db` | `localhost:5432` | Postgres (`postgres` / `postgres` / `apartments_db`) |
+
+Uploaded images are stored in the `uploads_data` volume.
 
 ---
 
-## Quick start
+## Local development (without Docker)
+
+### Prerequisites
+
+- Node.js 20+
+- npm
+- PostgreSQL 14+ (or start only the DB with `docker compose up db -d`)
 
 ### 1. Database
 
-Create a Postgres database, for example:
-
 ```bash
 createdb apartments_db
-```
-
-Or with Docker:
-
-```bash
-docker run --name apartments-postgres \
-  -e POSTGRES_USER=postgres \
-  -e POSTGRES_PASSWORD=postgres \
-  -e POSTGRES_DB=apartments_db \
-  -p 5432:5432 \
-  -d postgres:16
+# or
+docker compose up db -d
 ```
 
 ### 2. Backend
@@ -68,8 +89,8 @@ npm install
 npm run start:dev
 ```
 
-Backend runs at [http://localhost:3000](http://localhost:3000).  
-Tables are created automatically via TypeORM `synchronize` when `NODE_ENV` is not `production`.
+Backend: [http://localhost:3000](http://localhost:3000)  
+Tables are created automatically via TypeORM `synchronize` when `NODE_ENV` is not `production`, or when `DB_SYNCHRONIZE=true`.
 
 ### 3. Frontend
 
@@ -80,7 +101,7 @@ npm install
 npm run dev
 ```
 
-Frontend runs at [http://localhost:3001](http://localhost:3001).
+Frontend: [http://localhost:3001](http://localhost:3001)
 
 ---
 
@@ -98,6 +119,7 @@ Frontend runs at [http://localhost:3001](http://localhost:3001).
 | `DB_USERNAME` | Postgres user | `postgres` |
 | `DB_PASSWORD` | Postgres password | `postgres` |
 | `DB_NAME` | Database name | `apartments_db` |
+| `DB_SYNCHRONIZE` | Auto-create/update tables (`true`/`false`) | unset (on unless `NODE_ENV=production`) |
 
 Copy from `backend/.env.example` and adjust credentials.
 
@@ -113,7 +135,9 @@ Copy from `backend/.env.example` and adjust credentials.
 
 ```text
 nawy-apartments/
+├── docker-compose.yml       # One-command stack (db + backend + frontend)
 ├── backend/                 # NestJS API
+│   ├── Dockerfile
 │   ├── src/
 │   │   ├── apartment/       # Entity, DTOs, mapper, service, controller
 │   │   ├── project/         # Entity, DTOs, mapper, service, controller
@@ -122,6 +146,7 @@ nawy-apartments/
 │   │   └── shared/          # DB helpers (e.g. unique violation)
 │   └── uploads/images/      # Stored image files (gitignored content)
 └── frontend/                # Next.js app
+    ├── Dockerfile
     └── src/
         ├── app/             # Routes (App Router)
         ├── components/      # Shared UI (buttons, card, tag, navbar)
