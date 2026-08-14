@@ -2,13 +2,25 @@
 
 Take-home apartment listing app: browse projects and apartments, filter units, upload images, and create listings.
 
-| Layer | Stack | Port |
+## Live demo
+
+If you do not want to run the project locally, or you hit any issues while running it, you can fully browse and test the app here:
+
+| What | URL |
+| --- | --- |
+| App | [https://nawy-apartments.up.railway.app](https://nawy-apartments.up.railway.app/) |
+| API | [https://nawy-apartments-bk.up.railway.app/api](https://nawy-apartments-bk.up.railway.app/api) |
+| Swagger | [https://nawy-apartments-bk.up.railway.app/api/docs](https://nawy-apartments-bk.up.railway.app/api/docs) |
+
+| Layer | Stack | Port (local) |
 | --- | --- | --- |
 | Backend | NestJS 11, TypeORM, PostgreSQL | `3000` |
 | Frontend | Next.js 16 (App Router), React 19, MUI 9 | `3001` |
 
+### Local URLs (when running yourself)
+
 API base URL: `http://localhost:3000/api`  
-API docs (Swagger): [http://localhost:3000/api/docs](http://localhost:3000/api/docs)  
+Swagger UI: [http://localhost:3000/api/docs](http://localhost:3000/api/docs)  
 Static images: `http://localhost:3000/uploads/...`
 
 ---
@@ -29,8 +41,9 @@ Static images: `http://localhost:3000/uploads/...`
 - Create apartment sends those `path` values (not raw files) in the request body
 
 ### API documentation
-- Interactive Swagger UI for all endpoints (projects, apartments, uploads)
-- Open: [http://localhost:3000/api/docs](http://localhost:3000/api/docs)
+- **Swagger UI** (interactive): [local](http://localhost:3000/api/docs) · [production](https://nawy-apartments-bk.up.railway.app/api/docs)
+- **Postman collection**: `backend/documentation/Apartments.postman_collection.json`  
+  Import into Postman and set the `Domain` variable to `http://localhost:3000` (local) or `https://nawy-apartments-bk.up.railway.app` (production).
 
 ---
 
@@ -74,6 +87,8 @@ Compose services:
 | `db` | `nawy-db` | `localhost:5432` | Postgres (`postgres` / `postgres` / `apartments_db`) |
 
 Uploaded images persist in the `uploads_data` volume; DB data in `postgres_data`.
+
+Or skip local setup and use the [live Railway deployment](https://nawy-apartments.up.railway.app/).
 
 ---
 
@@ -152,6 +167,7 @@ nawy-apartments/
 ├── docker-compose.yml       # One-command stack (db + backend + frontend)
 ├── backend/                 # NestJS API
 │   ├── Dockerfile
+│   ├── documentation/       # Postman collection
 │   ├── src/
 │   │   ├── apartment/       # Entity, DTOs, mapper, service, controller + Swagger docs
 │   │   ├── project/         # Entity, DTOs, mapper, service, controller + Swagger docs
@@ -173,7 +189,8 @@ nawy-apartments/
 
 ## API reference
 
-Interactive docs: [http://localhost:3000/api/docs](http://localhost:3000/api/docs)
+- Swagger: [local](http://localhost:3000/api/docs) · [production](https://nawy-apartments-bk.up.railway.app/api/docs)
+- Postman: import `backend/documentation/Apartments.postman_collection.json` (`Domain` = host without `/api`)
 
 Global prefix: `/api`  
 Validation: `class-validator` via global `ValidationPipe` (`whitelist`, `forbidNonWhitelisted`, `transform`)
