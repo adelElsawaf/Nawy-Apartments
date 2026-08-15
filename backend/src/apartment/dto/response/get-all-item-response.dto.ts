@@ -24,6 +24,9 @@ export class GetAllItemResponseDto {
   @ApiProperty({ example: 3 })
   bedrooms: number;
 
+  @ApiProperty({ example: 2 })
+  bathrooms: number;
+
   @ApiProperty({ type: ProjectResponseDto, nullable: true })
   project: ProjectResponseDto | null;
 

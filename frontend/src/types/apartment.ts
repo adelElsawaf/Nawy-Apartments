@@ -26,6 +26,7 @@ export type ApartmentListItem = {
   price: string;
   area: string;
   bedrooms: number;
+  bathrooms: number;
   project: Project | null;
   imageUrl: string | null;
 };

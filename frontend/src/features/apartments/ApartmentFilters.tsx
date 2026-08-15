@@ -10,6 +10,7 @@ import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import SecondaryButton from "@/components/ui/button/SecondaryButton";
+import { AmenityIcons, type AmenityIconName } from "@/components/ui/icon/amenityIcons";
 import { ApartmentType, FinishingStatus } from "@/types/apartment";
 import type { Project } from "@/types/project";
 import type { ApartmentFilterForm } from "./hooks/useApartments";
@@ -49,16 +50,19 @@ function formatRoomsSummary(values: ApartmentFilterForm) {
 
 function FilterDropdown({
   label,
+  icon,
   summary,
   children,
 }: {
   label: string;
+  icon: AmenityIconName;
   summary: string | null;
   children: ReactNode;
 }) {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const open = Boolean(anchorEl);
   const id = useId();
+  const Icon = AmenityIcons[icon];
 
   return (
     <>
@@ -78,14 +82,17 @@ function FilterDropdown({
           borderColor: "divider",
         }}
       >
-        <Box sx={{ minWidth: 0 }}>
-          <Typography variant="body2" color="text.secondary">
-            {label}
-          </Typography>
-          <Typography noWrap sx={{ fontWeight: summary ? 600 : 400 }}>
-            {summary ?? "Any"}
-          </Typography>
-        </Box>
+        <Stack direction="row" spacing={1.25} sx={{ alignItems: "center", minWidth: 0 }}>
+          <Icon sx={{ fontSize: 22, color: "accent.main", flexShrink: 0 }} />
+          <Box sx={{ minWidth: 0 }}>
+            <Typography variant="body2" color="text.secondary">
+              {label}
+            </Typography>
+            <Typography noWrap sx={{ fontWeight: summary ? 600 : 400 }}>
+              {summary ?? "Any"}
+            </Typography>
+          </Box>
+        </Stack>
         <Typography component="span" color="text.secondary" aria-hidden>
           ▾
         </Typography>
@@ -180,6 +187,7 @@ export default function ApartmentFilters({
 
           <FilterDropdown
             label="Price"
+            icon="price"
             summary={formatRange(values.minPrice, values.maxPrice)}
           >
             <TextField
@@ -202,6 +210,7 @@ export default function ApartmentFilters({
 
           <FilterDropdown
             label="Rooms & baths"
+            icon="bed"
             summary={formatRoomsSummary(values)}
           >
             <TextField
@@ -232,6 +241,7 @@ export default function ApartmentFilters({
 
           <FilterDropdown
             label="Area"
+            icon="area"
             summary={formatRange(values.minArea, values.maxArea, " m²")}
           >
             <TextField

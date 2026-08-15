@@ -2,11 +2,13 @@ import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Tag from "@/components/ui/tag/Tag";
+import AmenityRow, { type AmenityItem } from "@/components/ui/icon/AmenityRow";
 
 type CardProps = {
   title: string;
   description?: string | null;
-  caption: string;
+  caption?: string;
+  amenities?: AmenityItem[];
   image?: string;
   tag?: string | null;
 };
@@ -15,6 +17,7 @@ export default function Card({
   title,
   description,
   caption,
+  amenities,
   image,
   tag,
 }: CardProps) {
@@ -124,9 +127,13 @@ export default function Card({
           </Typography>
         </Box>
 
-        <Typography variant="caption" color="text.secondary">
-          {caption}
-        </Typography>
+        {amenities && amenities.length > 0 ? (
+          <AmenityRow items={amenities} />
+        ) : caption ? (
+          <Typography variant="caption" color="text.secondary">
+            {caption}
+          </Typography>
+        ) : null}
       </Stack>
     </Box>
   );

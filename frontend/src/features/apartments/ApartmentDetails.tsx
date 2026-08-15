@@ -9,6 +9,8 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import SecondaryButton from "@/components/ui/button/SecondaryButton";
 import Tag from "@/components/ui/tag/Tag";
+import { SpecWithIcon } from "@/components/ui/icon/AmenityRow";
+import { AmenityIcons } from "@/components/ui/icon/amenityIcons";
 import { ApartmentImageType, type ApartmentImage } from "@/types/apartment";
 import { useApartment } from "./hooks/useApartment";
 import {
@@ -30,28 +32,6 @@ function sortImages(images: ApartmentImage[]) {
 
     return left.type === ApartmentImageType.Hero ? -1 : 1;
   });
-}
-
-function Spec({ label, value }: { label: string; value: string }) {
-  return (
-    <Box
-      sx={{
-        p: 2,
-        borderRadius: 2,
-        bgcolor: "background.default",
-        border: "1px solid",
-        borderColor: "divider",
-      }}
-    >
-      <Typography
-        variant="caption"
-        sx={{ color: "text.secondary", fontWeight: 600 }}
-      >
-        {label}
-      </Typography>
-      <Typography sx={{ fontWeight: 700, mt: 0.5 }}>{value}</Typography>
-    </Box>
-  );
 }
 
 export default function ApartmentDetails({ id }: ApartmentDetailsProps) {
@@ -279,12 +259,18 @@ export default function ApartmentDetails({ id }: ApartmentDetailsProps) {
               borderColor: "divider",
             }}
           >
-            <Typography variant="h5" sx={{ fontWeight: 700, mb: 0.5 }}>
-              {formatPrice(apartment.price)}
-            </Typography>
-            <Typography color="text.secondary" sx={{ mb: 2.5 }}>
-              {formatArea(apartment.area)}
-            </Typography>
+            <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 0.5 }}>
+              <AmenityIcons.price sx={{ fontSize: 22, color: "accent.main" }} />
+              <Typography variant="h5" sx={{ fontWeight: 700 }}>
+                {formatPrice(apartment.price)}
+              </Typography>
+            </Stack>
+            <Stack direction="row" spacing={0.75} sx={{ alignItems: "center", mb: 2.5 }}>
+              <AmenityIcons.area sx={{ fontSize: 18, color: "text.secondary" }} />
+              <Typography color="text.secondary">
+                {formatArea(apartment.area)}
+              </Typography>
+            </Stack>
 
             <Box
               sx={{
@@ -293,10 +279,23 @@ export default function ApartmentDetails({ id }: ApartmentDetailsProps) {
                 gap: 1.5,
               }}
             >
-              <Spec label="Bedrooms" value={String(apartment.bedrooms)} />
-              <Spec label="Bathrooms" value={String(apartment.bathrooms)} />
-              <Spec label="Rooms" value={String(apartment.rooms)} />
-              <Spec
+              <SpecWithIcon
+                icon="bed"
+                label="Bedrooms"
+                value={String(apartment.bedrooms)}
+              />
+              <SpecWithIcon
+                icon="bath"
+                label="Bathrooms"
+                value={String(apartment.bathrooms)}
+              />
+              <SpecWithIcon
+                icon="room"
+                label="Rooms"
+                value={String(apartment.rooms)}
+              />
+              <SpecWithIcon
+                icon="floor"
                 label="Floor"
                 value={apartment.floor == null ? "—" : String(apartment.floor)}
               />

@@ -96,6 +96,7 @@ export class ApartmentMapper {
     response.price = apartment.price;
     response.area = apartment.area;
     response.bedrooms = apartment.bedrooms;
+    response.bathrooms = apartment.bathrooms;
     response.project = this.toProjectResponseDto(apartment.project);
     response.imageUrl = hero ? this.toPublicUrl(hero.path, appUrl) : null;
     return response;

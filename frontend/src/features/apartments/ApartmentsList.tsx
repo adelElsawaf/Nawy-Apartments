@@ -174,8 +174,25 @@ export default function ApartmentsList() {
                     title={apartment.unitName}
                     image={apartment.imageUrl ?? undefined}
                     tag={apartment.project?.name ?? "No project"}
-                    description={`Unit ${apartment.unitNumber}`}
-                    caption={`${APARTMENT_TYPE_LABELS[apartment.type]} · ${formatPrice(apartment.price)} · ${formatArea(apartment.area)} · ${apartment.bedrooms} bed`}
+                    description={`Unit ${apartment.unitNumber} · ${APARTMENT_TYPE_LABELS[apartment.type]}`}
+                    amenities={[
+                      {
+                        icon: "price",
+                        label: formatPrice(apartment.price),
+                      },
+                      {
+                        icon: "area",
+                        label: formatArea(apartment.area),
+                      },
+                      {
+                        icon: "bed",
+                        label: `${apartment.bedrooms}`,
+                      },
+                      {
+                        icon: "bath",
+                        label: `${apartment.bathrooms}`,
+                      },
+                    ]}
                   />
                 </Box>
               ))}
