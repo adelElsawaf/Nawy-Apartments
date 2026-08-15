@@ -131,21 +131,13 @@ export default function ApartmentFilters({
   return (
     <Box component="form" onSubmit={onSubmit} sx={{ mb: 3 }}>
       <Stack spacing={2}>
-        <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
-          <TextField
-            placeholder="Search by unit or project name"
-            value={values.search}
-            onChange={setField("search")}
-            slotProps={{ htmlInput: { maxLength: 120 } }}
-            sx={{ flex: 1, minWidth: 200 }}
-          />
-          <SecondaryButton type="submit">Apply</SecondaryButton>
-          {canClear && (
-            <SecondaryButton type="button" onClick={onClear}>
-              Clear
-            </SecondaryButton>
-          )}
-        </Stack>
+        <TextField
+          fullWidth
+          placeholder="Search by unit or project name"
+          value={values.search}
+          onChange={setField("search")}
+          slotProps={{ htmlInput: { maxLength: 120 } }}
+        />
 
         <Box
           sx={{
@@ -289,14 +281,48 @@ export default function ApartmentFilters({
           </Stack>
         </Collapse>
 
-        <Button
-          type="button"
-          variant="text"
-          onClick={() => setShowMore((open) => !open)}
-          sx={{ alignSelf: "flex-start", textTransform: "none" }}
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          spacing={1.5}
+          sx={{
+            alignItems: { sm: "center" },
+            justifyContent: "space-between",
+          }}
         >
-          {showMore ? "Show less" : "Show more filters"}
-        </Button>
+          <Button
+            type="button"
+            variant="text"
+            onClick={() => setShowMore((open) => !open)}
+            sx={{
+              alignSelf: { xs: "flex-start", sm: "center" },
+              textTransform: "none",
+            }}
+          >
+            {showMore ? "Show less" : "Show more filters"}
+          </Button>
+
+          <Stack
+            direction="row"
+            spacing={1}
+            sx={{ width: { xs: "100%", sm: "auto" } }}
+          >
+            {canClear && (
+              <SecondaryButton
+                type="button"
+                onClick={onClear}
+                sx={{ flex: { xs: 1, sm: "none" } }}
+              >
+                Clear
+              </SecondaryButton>
+            )}
+            <SecondaryButton
+              type="submit"
+              sx={{ flex: { xs: 1, sm: "none" } }}
+            >
+              Apply filters
+            </SecondaryButton>
+          </Stack>
+        </Stack>
       </Stack>
     </Box>
   );
