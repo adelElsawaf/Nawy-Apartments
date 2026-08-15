@@ -241,7 +241,7 @@ The distinction allows different API responses for different use cases.
 
 The **HTTP list response** only exposes a hero `imageUrl` (plus card fields). The client does not receive the full gallery on listing.
 
-The listing query may still load image relations server-side so the mapper can pick the hero; only that URL is returned in the DTO.
+The listing query loads **hero images only** from the DB (filtered join); the DTO exposes that as `imageUrl`.
 
 ```text
 Apartment card (API response)
@@ -528,34 +528,25 @@ This allows users to search for either an apartment or its project.
 
 ---
 
-# 14. Relation Loading
-
-The apartment listing needs project data (for cards and search) and images (to resolve the hero URL).
+The apartment listing needs project data (for cards and search) and the **hero image only** (for `imageUrl`).
 
 The query uses:
 
 ```ts
-.leftJoin('apartment.project', 'project') // join for filtering / search on project.name
-.setFindOptions({
-  relations: { project: true, images: true },
-  relationLoadStrategy: 'query',
-})
+.leftJoinAndSelect('apartment.project', 'project')
+.leftJoinAndSelect(
+  'apartment.images',
+  'images',
+  'images.type = :heroType',
+  { heroType: ApartmentImageType.Hero },
+)
 ```
 
-`relationLoadStrategy: 'query'` loads relations in **separate SELECTs** after the main apartment page is resolved, instead of one large JOIN that multiplies rows.
+The `ON` condition on `images` ensures the database returns hero rows only — not the full carousel.
 
-This matters because an apartment can have multiple images:
+Project is `ManyToOne` and hero is typically one row per apartment, so this join does not multiply rows the way loading every carousel image would. That keeps `skip` / `take` pagination correct.
 
-```text
-Apartment A
-├── Image 1
-├── Image 2
-└── Image 3
-```
-
-Using `leftJoinAndSelect` on `images` together with `skip` / `take` would apply `LIMIT`/`OFFSET` to joined rows, which can break pagination. Query-based relation loading avoids that.
-
-`leftJoin` (without select) on `project` is still used so `WHERE` clauses can reference `project.name` / `project.id`.
+Details still load the full gallery via `relations: { project: true, images: true }` on `getById`.
 
 ---
 
@@ -870,14 +861,16 @@ The frontend is a **Next.js App Router** application that talks to the NestJS AP
 
 ### Stack
 
-| Concern | Choice |
-|---|---|
-| Framework | Next.js 16 (App Router) |
-| UI | React 19 + MUI 9 |
-| Styling | Emotion (via MUI) + theme tokens |
-| Forms | `react-hook-form` (create flows) |
-| Icons | `@mui/icons-material` |
-| API access | `fetch` wrappers in `lib/api` |
+
+| Concern    | Choice                           |
+| ---------- | -------------------------------- |
+| Framework  | Next.js 16 (App Router)          |
+| UI         | React 19 + MUI 9                 |
+| Styling    | Emotion (via MUI) + theme tokens |
+| Forms      | `react-hook-form` (create flows) |
+| Icons      | `@mui/icons-material`            |
+| API access | `fetch` wrappers in `lib/api`    |
+
 
 Base API URL comes from `NEXT_PUBLIC_API_URL` (e.g. `http://localhost:3000/api` or the Railway API).
 
@@ -901,15 +894,17 @@ Pages stay thin; feature modules own screens, forms, and data hooks.
 
 ### Routes
 
-| Route | Purpose |
-|---|---|
-| `/` | Home (hero + highlights) |
-| `/about` | About |
-| `/projects` | Project list + search |
-| `/projects/new` | Create project |
-| `/apartments` | Apartment list + filters |
-| `/apartments/new` | Create apartment (upload → create) |
-| `/apartments/[id]` | Apartment details + gallery |
+
+| Route              | Purpose                            |
+| ------------------ | ---------------------------------- |
+| `/`                | Home (hero + highlights)           |
+| `/about`           | About                              |
+| `/projects`        | Project list + search              |
+| `/projects/new`    | Create project                     |
+| `/apartments`      | Apartment list + filters           |
+| `/apartments/new`  | Create apartment (upload → create) |
+| `/apartments/[id]` | Apartment details + gallery        |
+
 
 ### API clients
 
@@ -971,26 +966,29 @@ Layouts use MUI breakpoints (`xs` / `sm` / `md`) for grids, stacks, and the mobi
 
 # 25. Summary
 
-| Concern | Decision |
-|---|---|
-| Backend | NestJS |
-| Frontend | Next.js App Router + MUI |
-| ORM | TypeORM |
-| Database | PostgreSQL |
-| Project → Apartment | Optional `ManyToOne` |
-| Apartment → Images | `OneToMany` |
-| Unit uniqueness | `(unit_number, project_id)` |
-| Image storage | Disk + Railway / Docker volume |
-| Image database value | Relative path |
-| Image URLs | Generated from `APP_URL` |
-| Filtering | TypeORM QueryBuilder |
-| Search | Unit name + project name |
-| Pagination | Offset pagination |
-| Next-page detection | `limit + 1` |
-| List response | Slim DTO + `imageUrl` (hero) |
-| Details response | Full gallery |
-| Frontend filters | Draft / apply + load more |
-| Data integrity | Foreign keys + unique constraints |
-| API validation | `class-validator` |
-| API documentation | Swagger + Postman |
-| Future image storage | S3 / R2 / object storage |
+
+| Concern              | Decision                          |
+| -------------------- | --------------------------------- |
+| Backend              | NestJS                            |
+| Frontend             | Next.js App Router + MUI          |
+| ORM                  | TypeORM                           |
+| Database             | PostgreSQL                        |
+| Project → Apartment  | Optional `ManyToOne`              |
+| Apartment → Images   | `OneToMany`                       |
+| Unit uniqueness      | `(unit_number, project_id)`       |
+| Image storage        | Disk + Railway / Docker volume    |
+| Image database value | Relative path                     |
+| Image URLs           | Generated from `APP_URL`          |
+| Filtering            | TypeORM QueryBuilder              |
+| Search               | Unit name + project name          |
+| Pagination           | Offset pagination                 |
+| Next-page detection  | `limit + 1`                       |
+| List response        | Slim DTO + `imageUrl` (hero)      |
+| Details response     | Full gallery                      |
+| Frontend filters     | Draft / apply + load more         |
+| Data integrity       | Foreign keys + unique constraints |
+| API validation       | `class-validator`                 |
+| API documentation    | Swagger + Postman                 |
+| Future image storage | S3 / R2 / object storage          |
+
+

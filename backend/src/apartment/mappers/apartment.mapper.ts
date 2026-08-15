@@ -8,7 +8,6 @@ import { GetAllResponseDto } from '../dto/response/get-all-response.dto';
 import { ApartmentResponseDto } from '../dto/response/apartment-response.dto';
 import { ApartmentImage } from '../entities/apartment-image.entity';
 import { Apartment } from '../entities/apartment.entity';
-import { ApartmentImageType } from '../enums/apartment-image-type.enum';
 
 export class ApartmentMapper {
   static fromCreateRequest(
@@ -84,9 +83,7 @@ export class ApartmentMapper {
     apartment: Apartment,
     appUrl: string,
   ): GetAllItemResponseDto {
-    const hero = (apartment.images ?? []).find(
-      (image) => image.type === ApartmentImageType.Hero,
-    );
+    const hero = (apartment.images ?? [])[0];
 
     const response = new GetAllItemResponseDto();
     response.id = apartment.id;

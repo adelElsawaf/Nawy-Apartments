@@ -15,6 +15,7 @@ import { ApartmentResponseDto } from './dto/response/apartment-response.dto';
 import { GetAllResponseDto } from './dto/response/get-all-response.dto';
 import { Apartment } from './entities/apartment.entity';
 import { ApartmentType } from './enums/apartment-type.enum';
+import { ApartmentImageType } from './enums/apartment-image-type.enum';
 import { FinishingStatus } from './enums/finishing-status.enum';
 import { ApartmentMapper } from './mappers/apartment.mapper';
 
@@ -107,14 +108,13 @@ export class ApartmentService {
   private createGetAllQuery(): SelectQueryBuilder<Apartment> {
     return this.apartments
       .createQueryBuilder('apartment')
-      .leftJoin('apartment.project', 'project')
-      .setFindOptions({
-        relations: {
-          project: true,
-          images: true,
-        },
-        relationLoadStrategy: 'query',
-      })
+      .leftJoinAndSelect('apartment.project', 'project')
+      .leftJoinAndSelect(
+        'apartment.images',
+        'images',
+        'images.type = :heroType',
+        { heroType: ApartmentImageType.Hero },
+      )
       .orderBy('apartment.createdAt', 'DESC')
       .addOrderBy('apartment.id', 'DESC');
   }
